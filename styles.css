@@ -5,7 +5,7 @@ body {
     margin: 0;
     padding: 0;
     color: #333;
-    background-color: #f8f8f8;
+    background-color: #FAEBD7; /* Soft desert yellow */
 }
 
 .container {
@@ -80,7 +80,7 @@ nav ul li a:hover {
 }
 
 .section:nth-child(even) {
-    background-color: #f8f8f8;
+    background-color: #F8F8F8;
 }
 
 .section h2 {
