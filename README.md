@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,14 +40,14 @@
                 <p>Description of the research project. This could include the abstract, methodology, results, and significance of the work.</p>
                 <a href="link_to_full_paper.pdf">Read More</a>
             </div>
-            <!-- Add more research items as needed -->
+          
         </div>
     </section>
 
     <section id="contact" class="section">
         <div class="container">
             <h2>Contact</h2>
-            <p>If you have any questions or would like to collaborate, feel free to reach out to me at <a href="mailto:your-email@example.com">your-email@example.com</a>.</p>
+            <p>If you have any questions or would like to collaborate, feel free to reach out to me at <a href="mailto:ekta.mishra@yale.edu">ekta.mishra@yale.edu</a>.</p>
         </div>
     </section>
 
