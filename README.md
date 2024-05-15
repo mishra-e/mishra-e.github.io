@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekta Mishra - Research</title>
+    <title>Ekta Mishra - Home</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -12,42 +12,21 @@
             <h1>Ekta Mishra</h1>
             <nav>
                 <ul>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#research">Research</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="cv.html">CV</a></li>
+                    <li><a href="research.html">Research</a></li>
+                    <li><a href="teaching.html">Teaching</a></li>
+                    <li><a href="photos.html">Photos</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <section id="about" class="section">
+    <section class="section">
         <div class="container">
-            <h2>About Me</h2>
-            <p>Welcome to my research page. I am Ekta Mishra, an incoming Master's student at Yale University specializing in health, environmental, and development economics. Here you can find a selection of my research projects and publications.</p>
-        </div>
-    </section>
-
-    <section id="research" class="section">
-        <div class="container">
-            <h2>Research</h2>
-            <div class="research-item">
-                <h3>Project Title 1</h3>
-                <p>Description of the research project. This could include the abstract, methodology, results, and significance of the work.</p>
-                <a href="link_to_full_paper.pdf">Read More</a>
-            </div>
-            <div class="research-item">
-                <h3>Project Title 2</h3>
-                <p>Description of the research project. This could include the abstract, methodology, results, and significance of the work.</p>
-                <a href="link_to_full_paper.pdf">Read More</a>
-            </div>
-          
-        </div>
-    </section>
-
-    <section id="contact" class="section">
-        <div class="container">
-            <h2>Contact</h2>
-            <p>If you have any questions or would like to collaborate, feel free to reach out to me at <a href="mailto:ekta.mishra@yale.edu">ekta.mishra@yale.edu</a>.</p>
+            <h2>Welcome</h2>
+            <p>Welcome to my personal website. Explore to know more about my research, teaching, and interests.</p>
         </div>
     </section>
 
