@@ -30,45 +30,44 @@ header {
     background: #fff;
     padding: 20px 0;
     border-bottom: 1px solid #e7e7e7;
-    position: fixed;
-    width: 100%;
-    z-index: 1000;
-    top: 0;
-    left: 0;
+    position: relative;
+    text-align: center;
 }
 
 header .container {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
 }
 
 header h1 {
     margin: 0;
-    font-size: 1.8em;
+    font-size: 2em;
     font-weight: 700;
 }
 
 nav ul {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 10px 0 0 0;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 nav ul li {
-    margin-left: 20px;
+    margin: 0 15px;
 }
 
 nav ul li a {
     text-decoration: none;
-    color: #333;
+    color: #007BFF;
     font-weight: 500;
     transition: color 0.3s;
 }
 
 nav ul li a:hover {
-    color: #007BFF;
+    color: #0056b3;
 }
 
 /* Section styles */
@@ -92,26 +91,6 @@ nav ul li a:hover {
 .section p {
     font-size: 1.1em;
     margin-bottom: 20px;
-}
-
-/* Research item styles */
-.research-item {
-    margin-bottom: 40px;
-}
-
-.research-item h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-.research-item a {
-    text-decoration: none;
-    color: #007BFF;
-    font-weight: 500;
-}
-
-.research-item a:hover {
-    text-decoration: underline;
 }
 
 /* Footer styles */
