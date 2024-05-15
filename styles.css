@@ -1,60 +1,122 @@
-/* styles.css */
+/* General styles */
 body {
     font-family: 'Roboto', sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
     color: #333;
-}
-
-header {
-    background: #f8f8f8;
-    padding: 20px 0;
-    border-bottom: 1px solid #e7e7e7;
+    background-color: #f8f8f8;
 }
 
 .container {
-    width: 80%;
+    width: 85%;
     margin: 0 auto;
-    max-width: 1200px;
+    max-width: 1000px;
+}
+
+h1, h2, h3 {
+    font-weight: 700;
+    color: #333;
+}
+
+p {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.8;
+}
+
+/* Header styles */
+header {
+    background: #fff;
+    padding: 20px 0;
+    border-bottom: 1px solid #e7e7e7;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 header h1 {
     margin: 0;
-    font-size: 2em;
+    font-size: 1.8em;
+    font-weight: 700;
 }
 
 nav ul {
     list-style: none;
     padding: 0;
+    margin: 0;
+    display: flex;
 }
 
 nav ul li {
-    display: inline;
-    margin-right: 20px;
+    margin-left: 20px;
 }
 
 nav ul li a {
     text-decoration: none;
     color: #333;
+    font-weight: 500;
+    transition: color 0.3s;
 }
 
+nav ul li a:hover {
+    color: #007BFF;
+}
+
+/* Section styles */
 .section {
-    padding: 40px 0;
+    padding: 100px 0 40px 0;
+    background-color: #fff;
+    margin-top: 70px;
+    border-bottom: 1px solid #e7e7e7;
 }
 
-h2 {
-    font-size: 1.8em;
+.section:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+.section h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.section p {
+    font-size: 1.1em;
     margin-bottom: 20px;
 }
 
-p {
-    font-size: 1em;
-    margin-bottom: 20px;
+/* Research item styles */
+.research-item {
+    margin-bottom: 40px;
 }
 
+.research-item h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.research-item a {
+    text-decoration: none;
+    color: #007BFF;
+    font-weight: 500;
+}
+
+.research-item a:hover {
+    text-decoration: underline;
+}
+
+/* Footer styles */
 footer {
-    background: #f8f8f8;
+    background: #fff;
     padding: 20px 0;
     border-top: 1px solid #e7e7e7;
     text-align: center;
@@ -62,4 +124,6 @@ footer {
 
 footer p {
     margin: 0;
+    font-size: 1em;
+    color: #555;
 }
