@@ -5,7 +5,7 @@ body {
     margin: 0;
     padding: 0;
     color: #333;
-    background-color: #fff2cc/* Soft desert yellow */
+    background-color: #eeeeee/* Soft desert yellow */
 }
 
 .container {
@@ -28,18 +28,18 @@ p {
 /* Link styles */
 a {
     font-family: 'Georgia', serif;
-    color: #007BFF;
+    color: #e06666;
     text-decoration: none;
 }
 
 a:hover {
-    color: #0056b3;
-    text-decoration: underline;
+    color: #e06666;
+    text-decoration: none;
 }
 
 /* Header styles */
 header {
-    background: #fff2cc;
+    background: #eeeeee;
     padding: 20px 0;
     border-bottom: 1px solid #e7e7e7;
     position: relative;
@@ -96,7 +96,7 @@ nav ul li a:hover {
 }
 
 .section:nth-child(even) {
-    background-color: #fff2cc;
+    background-color: #eeeeee;
 }
 
 .section h2 {
@@ -112,7 +112,7 @@ nav ul li a:hover {
 
 /* Footer styles */
 footer {
-    background: #fff2cc;
+    background: #eeeeee;
     padding: 20px 0;
     border-top: 1px solid #e7e7e7;
     text-align: center;
