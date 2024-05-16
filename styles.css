@@ -5,7 +5,7 @@ body {
     margin: 0;
     padding: 0;
     color: #333;
-    background-color: #fffae0/* Soft desert yellow */
+    background-color: #fff2cc/* Soft desert yellow */
 }
 
 .container {
@@ -39,7 +39,7 @@ a:hover {
 
 /* Header styles */
 header {
-    background: #fffae0;
+    background: #fff2cc;
     padding: 20px 0;
     border-bottom: 1px solid #e7e7e7;
     position: relative;
@@ -96,7 +96,7 @@ nav ul li a:hover {
 }
 
 .section:nth-child(even) {
-    background-color: #fffae0;
+    background-color: #fff2cc;
 }
 
 .section h2 {
@@ -112,7 +112,7 @@ nav ul li a:hover {
 
 /* Footer styles */
 footer {
-    background: #fff;
+    background: #fff2cc;
     padding: 20px 0;
     border-top: 1px solid #e7e7e7;
     text-align: center;
