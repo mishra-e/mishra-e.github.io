@@ -5,7 +5,7 @@ body {
     margin: 0;
     padding: 0;
     color: #333;
-    background-color: #eeeeee/* Soft desert yellow */
+    background-color: #eeeeee; /* Soft desert yellow */
 }
 
 .container {
@@ -89,9 +89,9 @@ nav ul li a:hover {
 
 /* Section styles */
 .section {
-    padding: 100px 0 40px 0;
+    padding: 40px 0; /* Reduced padding */
     background-color: #fff;
-    margin-top: 70px;
+    margin-top: 20px; /* Reduced margin */
     border-bottom: 1px solid #e7e7e7;
 }
 
