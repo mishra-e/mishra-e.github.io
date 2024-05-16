@@ -5,7 +5,7 @@ body {
     margin: 0;
     padding: 0;
     color: #333;
-    background-color: #fffae0; 
+    background-color: #fffae0/* Soft desert yellow */
 }
 
 .container {
@@ -23,6 +23,18 @@ p {
     font-size: 1.1em;
     color: #555;
     line-height: 1.8;
+}
+
+/* Link styles */
+a {
+    font-family: 'Georgia', serif;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
 }
 
 /* Header styles */
@@ -44,6 +56,11 @@ header h1 {
     margin: 0;
     font-size: 2em;
     font-weight: 700;
+}
+
+header h1 a {
+    text-decoration: none;
+    color: #333;
 }
 
 nav ul {
