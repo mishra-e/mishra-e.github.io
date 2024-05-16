@@ -27,7 +27,7 @@ p {
 
 /* Header styles */
 header {
-    background: #fff;
+    background: #fffae0;
     padding: 20px 0;
     border-bottom: 1px solid #e7e7e7;
     position: relative;
@@ -61,7 +61,7 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: #007BFF;
+    color: #e06666;
     font-weight: 500;
     transition: color 0.3s;
 }
@@ -79,7 +79,7 @@ nav ul li a:hover {
 }
 
 .section:nth-child(even) {
-    background-color: #F8F8F8;
+    background-color: #fffae0;
 }
 
 .section h2 {
