@@ -132,7 +132,10 @@ nav ul li a:hover {
 }
 
 .profile-image {
-    width: 100%;
+    float: left;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    width: 200px;
     height: auto;
     border-radius: 5px;
 }
