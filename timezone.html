@@ -37,9 +37,8 @@
     const { useState } = React;
     const Select = window.ReactSelect.default;
 
-    // Prepare options
-    const tzNames = moment.tz.names();
-    const timezoneOptions = tzNames.map(tz => {
+    // Prepare timezone options
+    const timezoneOptions = moment.tz.names().map(tz => {
       const parts = tz.split('/');
       const city = parts[parts.length - 1].replace(/_/g, ' ');
       const country = parts[0].replace(/_/g, ' ');
@@ -65,6 +64,8 @@
       return (
         <div className="p-6 bg-white rounded-lg shadow space-y-6">
           <h2 className="text-xl font-bold text-center text-blue-700">Timezone Converter</h2>
+
+          {/* Home timezone */}
           <div>
             <label className="block mb-2 font-semibold">Home Timezone:</label>
             <Select
@@ -75,11 +76,13 @@
               placeholder="Select home timezone..."
             />
           </div>
+
+          {/* Destinations */}
           <div className="space-y-4">
             {destinations.map((dest, i) => (
               <div key={i} className="flex items-center space-x-2">
                 <div className="flex-1">
-                  <label className="block mb-1">Destination {i+1}:</label>
+                  <label className="block mb-1">Destination {i + 1}:</label>
                   <Select
                     options={timezoneOptions}
                     value={dest}
@@ -93,6 +96,8 @@
             ))}
             <button onClick={addDestination} className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded">+ Add Destination</button>
           </div>
+
+          {/* Offset & Highlight */}
           <div className="flex items-center space-x-4">
             <div className="flex-1">
               <label className="block mb-2">Offset (hours): <span className="font-semibold text-blue-600">{offset}</span></label>
@@ -103,23 +108,25 @@
               <span>Highlight 8am–7pm</span>
             </label>
           </div>
+
+          {/* Table */}
           <div className="overflow-auto">
             <table className="w-full border-collapse">
               <thead className="bg-blue-600 text-white">
                 <tr>
                   <th className="border px-2 py-1">Hour ({homeTz.label})</th>
-                  {destinations.map((d,i) => d && <th key={i} className="border px-2 py-1">{d.label}</th>)}
+                  {destinations.map((d, i) => d && <th key={i} className="border px-2 py-1">{d.label}</th>)}
                 </tr>
               </thead>
               <tbody>
                 {hours.map(h => {
-                  const isWork = highlightWorking && h>=8 && h<=19;
+                  const isWork = highlightWorking && h >= 8 && h <= 19;
                   const base = moment().tz(homeTz.value).startOf('day');
-                  const time = base.clone().add(h+offset,'hours');
+                  const time = base.clone().add(h + offset, 'hours');
                   return (
-                    <tr key={h} className={`${isWork? 'bg-yellow-100':''} hover:bg-blue-100 even:bg-gray-50`}>
+                    <tr key={h} className={`${isWork ? 'bg-yellow-100' : ''} hover:bg-blue-100 even:bg-gray-50`}>
                       <td className="border px-2 py-1">{time.format('HH:mm')}</td>
-                      {destinations.map((d,i)=>(d?<td key={i} className="border px-2 py-1">{time.clone().tz(d.value).format('HH:mm')}</td>:null))}
+                      {destinations.map((d, i) => d && <td key={i} className="border px-2 py-1">{time.clone().tz(d.value).format('HH:mm')}</td>)}
                     </tr>
                   );
                 })}
@@ -130,6 +137,7 @@
       );
     }
 
+    // Mount
     const container = document.getElementById('root');
     ReactDOM.createRoot(container).render(<TimezoneConverter />);
   </script>
