@@ -1,160 +1,137 @@
-// filename: TimezoneConverter.jsx
-// Timezone Converter Webapp with add/remove columns and working-hours highlight
-// Dependencies: npm install moment-timezone react-select countries-and-timezones
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timezone Tool</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & ReactDOM UMD -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <!-- Babel for in-browser JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Moment & Moment-Timezone -->
+  <script src="https://unpkg.com/moment/min/moment.min.js"></script>
+  <script src="https://unpkg.com/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+  <!-- React-Select CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/react-select@5.7.3/dist/react-select.css" />
+</head>
+<body class="bg-gray-100">
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Ekta Mishra</h1>
+      <nav>
+        <a href="index.html" class="px-3 hover:underline">Home</a>
+        <a href="timezone.html" class="px-3 hover:underline font-semibold">Timezone Tool</a>
+      </nav>
+    </div>
+  </header>
 
+  <main class="container mx-auto px-4 py-8">
+    <div id="root"></div>
+  </main>
 
-import React, { useState } from 'react';
-import moment from 'moment-timezone';
-import Select from 'react-select';
-import ct from 'countries-and-timezones';
+  <!-- TimezoneConverter component script -->
+  <script type="text/babel">
+    const { useState } = React;
+    const Select = window.ReactSelect.default;
 
-// Prepare dropdown options: "City, Country"
-const timezoneOptions = moment.tz.names().map((tz) => {
-  const parts = tz.split('/');
-  const city = parts[parts.length - 1].replace(/_/g, ' ');
-  const info = ct.getTimezone(tz);
-  const countryCode = info?.countries?.[0];
-  const country = countryCode ? ct.getCountry(countryCode).name : parts[0];
-  return { value: tz, label: `${city}, ${country}` };
-});
-
-export default function TimezoneConverter() {
-  const defaultHome = timezoneOptions.find((o) => o.value === 'America/New_York');
-  const [homeTz, setHomeTz] = useState(defaultHome);
-  const [destinations, setDestinations] = useState([null]);
-  const [offset, setOffset] = useState(0);
-  const [highlightWorking, setHighlightWorking] = useState(false);
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-
-  const updateDestination = (selected, idx) => {
-    setDestinations((prev) => {
-      const next = [...prev];
-      next[idx] = selected;
-      return next;
+    // Prepare options
+    const tzNames = moment.tz.names();
+    const timezoneOptions = tzNames.map(tz => {
+      const parts = tz.split('/');
+      const city = parts[parts.length - 1].replace(/_/g, ' ');
+      const country = parts[0].replace(/_/g, ' ');
+      return { value: tz, label: `${city}, ${country}` };
     });
-  };
 
-  const addDestination = () => setDestinations((prev) => [...prev, null]);
+    function TimezoneConverter() {
+      const defaultHome = timezoneOptions.find(o => o.value === 'America/New_York');
+      const [homeTz, setHomeTz] = useState(defaultHome);
+      const [destinations, setDestinations] = useState([null]);
+      const [offset, setOffset] = useState(0);
+      const [highlightWorking, setHighlightWorking] = useState(false);
+      const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  const removeDestination = (idx) => {
-    setDestinations((prev) => prev.filter((_, i) => i !== idx));
-  };
+      const updateDestination = (opt, i) => {
+        setDestinations(prev => {
+          const arr = [...prev]; arr[i] = opt; return arr;
+        });
+      };
+      const addDestination = () => setDestinations(prev => [...prev, null]);
+      const removeDestination = i => setDestinations(prev => prev.filter((_, idx) => idx !== i));
 
-  return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6 bg-white shadow-xl rounded-lg">
-      <h1 className="text-3xl font-bold text-blue-700 text-center">Timezone Converter</h1>
-
-      {/* Home timezone select */}
-      <div>
-        <label htmlFor="home-select" className="block mb-2 font-semibold">Home Timezone:</label>
-        <Select
-          inputId="home-select"
-          options={timezoneOptions}
-          value={homeTz}
-          onChange={setHomeTz}
-          isSearchable
-          placeholder="Select home timezone..."
-        />
-      </div>
-
-      {/* Destination timezone controls */}
-      <div className="space-y-4">
-        {destinations.map((dest, i) => (
-          <div key={i} className="flex items-center space-x-2">
-            <div className="flex-1">
-              <label htmlFor={`dest-select-${i}`} className="block mb-2 font-semibold">
-                Destination {i + 1}:
-              </label>
-              <Select
-                inputId={`dest-select-${i}`}
-                options={timezoneOptions}
-                value={dest}
-                onChange={(opt) => updateDestination(opt, i)}
-                isSearchable
-                placeholder="Select destination timezone..."
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => removeDestination(i)}
-              className="mt-6 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow"
-            >
-              Remove
-            </button>
+      return (
+        <div className="p-6 bg-white rounded-lg shadow space-y-6">
+          <h2 className="text-xl font-bold text-center text-blue-700">Timezone Converter</h2>
+          <div>
+            <label className="block mb-2 font-semibold">Home Timezone:</label>
+            <Select
+              options={timezoneOptions}
+              value={homeTz}
+              onChange={setHomeTz}
+              isSearchable
+              placeholder="Select home timezone..."
+            />
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={addDestination}
-          className="mt-2 px-5 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow"
-        >
-          + Add Destination
-        </button>
-      </div>
-
-      {/* Offset and highlight toggle */}
-      <div className="flex items-center space-x-4">
-        <div className="flex-1">
-          <label className="block mb-2 font-semibold">
-            Time Offset (hours): <span className="text-blue-600 font-bold">{offset}</span>
-          </label>
-          <input
-            type="range"
-            min="-12"
-            max="12"
-            value={offset}
-            onChange={(e) => setOffset(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer hover:bg-gray-300"
-          />
-        </div>
-        <div className="flex items-center">
-          <input
-            id="highlight-working"
-            type="checkbox"
-            checked={highlightWorking}
-            onChange={(e) => setHighlightWorking(e.target.checked)}
-            className="h-5 w-5 text-blue-600"
-          />
-          <label htmlFor="highlight-working" className="ml-2 font-semibold">
-            Highlight 8am–7pm
-          </label>
-        </div>
-      </div>
-
-      {/* Time table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse table-auto">
-          <thead className="bg-blue-600 text-white">
-            <tr>
-              <th className="border px-4 py-2 text-left">Hour ({homeTz.label})</th>
-              {destinations.map(
-                (d, idx) =>
-                  d && (
-                    <th key={idx} className="border px-4 py-2 text-left">
-                      {d.label}
-                    </th>
-                  )
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {hours.map((h) => {
-              const isWork = highlightWorking && h >= 8 && h <= 19;
-              const rowClass = isWork ? 'bg-yellow-100' : '';
-              const base = moment().tz(homeTz.value).startOf('day');
-              const time = base.clone().add(h + offset, 'hours');
-              return (
-                <tr key={h} className={`${rowClass} hover:bg-blue-100 even:bg-gray-50`}>
-                  <td className="border px-4 py-2">{time.format('HH:mm')}</td>
-                  {destinations.map(
-                    (d, idx) =>
-                      d && (
-                        <td key={idx} className="border px-4 py-2">
-                          {time.clone().tz(d.value).format('HH:mm')}
-                        </td>
-                      )
-                  )}
+          <div className="space-y-4">
+            {destinations.map((dest, i) => (
+              <div key={i} className="flex items-center space-x-2">
+                <div className="flex-1">
+                  <label className="block mb-1">Destination {i+1}:</label>
+                  <Select
+                    options={timezoneOptions}
+                    value={dest}
+                    onChange={opt => updateDestination(opt, i)}
+                    isSearchable
+                    placeholder="Select destination..."
+                  />
+                </div>
+                <button onClick={() => removeDestination(i)} className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded">Remove</button>
+              </div>
+            ))}
+            <button onClick={addDestination} className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded">+ Add Destination</button>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex-1">
+              <label className="block mb-2">Offset (hours): <span className="font-semibold text-blue-600">{offset}</span></label>
+              <input type="range" min="-12" max="12" value={offset} onChange={e => setOffset(+e.target.value)} className="w-full" />
+            </div>
+            <label className="flex items-center space-x-2">
+              <input type="checkbox" checked={highlightWorking} onChange={e => setHighlightWorking(e.target.checked)} />
+              <span>Highlight 8am–7pm</span>
+            </label>
+          </div>
+          <div className="overflow-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="border px-2 py-1">Hour ({homeTz.label})</th>
+                  {destinations.map((d,i) => d && <th key={i} className="border px-2 py-1">{d.label}</th>)}
                 </tr>
-              );
-            })}
-          </tbody>
+              </thead>
+              <tbody>
+                {hours.map(h => {
+                  const isWork = highlightWorking && h>=8 && h<=19;
+                  const base = moment().tz(homeTz.value).startOf('day');
+                  const time = base.clone().add(h+offset,'hours');
+                  return (
+                    <tr key={h} className={`${isWork? 'bg-yellow-100':''} hover:bg-blue-100 even:bg-gray-50`}>
+                      <td className="border px-2 py-1">{time.format('HH:mm')}</td>
+                      {destinations.map((d,i)=>(d?<td key={i} className="border px-2 py-1">{time.clone().tz(d.value).format('HH:mm')}</td>:null))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    const container = document.getElementById('root');
+    ReactDOM.createRoot(container).render(<TimezoneConverter />);
+  </script>
+</body>
+</html>
