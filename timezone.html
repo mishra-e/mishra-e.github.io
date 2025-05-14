@@ -1,5 +1,5 @@
 // filename: TimezoneConverter.jsx
-// Timezone Converter Webapp with searchable dropdown and pretty labels
+// Timezone Converter Webapp with dynamic home and destination columns and hover highlighting
 // Dependencies: npm install moment-timezone react-select countries-and-timezones
 
 import React, { useState } from 'react';
@@ -7,7 +7,7 @@ import moment from 'moment-timezone';
 import Select from 'react-select';
 import ct from 'countries-and-timezones';
 
-// Build options: label = "City, Country", value = IANA timezone
+// Prepare dropdown options: "City, Country"
 const timezoneOptions = moment.tz.names().map((tz) => {
   const parts = tz.split('/');
   const city = parts[parts.length - 1].replace(/_/g, ' ');
@@ -20,48 +20,70 @@ const timezoneOptions = moment.tz.names().map((tz) => {
 export default function TimezoneConverter() {
   const defaultHome = timezoneOptions.find((o) => o.value === 'America/New_York');
   const [homeTz, setHomeTz] = useState(defaultHome);
-  const [cities, setCities] = useState([]);
+  // Start with one destination slot (null until selected)
+  const [destinations, setDestinations] = useState([null]);
   const [offset, setOffset] = useState(0);
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  const handleCities = (selected) => setCities(selected || []);
+  const updateDestination = (selected, idx) => {
+    setDestinations((prev) => {
+      const next = [...prev];
+      next[idx] = selected;
+      return next;
+    });
+  };
+
+  const addDestination = () => setDestinations((prev) => [...prev, null]);
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Timezone Converter</h1>
+    <div className="p-6 max-w-4xl mx-auto space-y-6 bg-white shadow-xl rounded-lg">
+      <h1 className="text-3xl font-bold text-blue-700 text-center">Timezone Converter</h1>
 
-      <div className="mb-4">
-        <label htmlFor="home-tz-select" className="block mb-1 font-medium">
+      {/* Home timezone select */}
+      <div>
+        <label htmlFor="home-select" className="block mb-2 font-semibold">
           Home Timezone:
         </label>
         <Select
-          inputId="home-tz-select"
+          inputId="home-select"
           options={timezoneOptions}
           value={homeTz}
           onChange={setHomeTz}
           isSearchable
-          placeholder="Select your home timezone..."
+          placeholder="Select home timezone..."
         />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="cities-select" className="block mb-1 font-medium">
-          Compare with:
-        </label>
-        <Select
-          inputId="cities-select"
-          options={timezoneOptions}
-          value={cities}
-          onChange={handleCities}
-          isSearchable
-          isMulti
-          placeholder="Select one or more timezones..."
-        />
+      {/* Destination timezone selects */}
+      <div className="space-y-4">
+        {destinations.map((dest, i) => (
+          <div key={i}>
+            <label htmlFor={`dest-select-${i}`} className="block mb-2 font-semibold">
+              Destination {i + 1}:
+            </label>
+            <Select
+              inputId={`dest-select-${i}`}
+              options={timezoneOptions}
+              value={dest}
+              onChange={(opt) => updateDestination(opt, i)}
+              isSearchable
+              placeholder="Select destination timezone..."
+            />
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addDestination}
+          className="mt-2 px-5 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow"
+        >
+          + Add Destination
+        </button>
       </div>
 
-      <div className="mb-6">
-        <label className="block mb-1 font-medium">
-          Time Offset (hours): <span>{offset}</span>
+      {/* Offset slider */}
+      <div>
+        <label className="block mb-2 font-semibold">
+          Time Offset (hours): <span className="text-blue-600 font-bold">{offset}</span>
         </label>
         <input
           type="range"
@@ -69,20 +91,24 @@ export default function TimezoneConverter() {
           max="12"
           value={offset}
           onChange={(e) => setOffset(Number(e.target.value))}
-          className="w-full"
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer hover:bg-gray-300"
         />
       </div>
 
+      {/* Time table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse">
-          <thead>
+        <table className="min-w-full border-collapse table-auto">
+          <thead className="bg-blue-600 text-white">
             <tr>
-              <th className="border p-2 text-left">Hour ({homeTz.label})</th>
-              {cities.map((o) => (
-                <th key={o.value} className="border p-2 text-left">
-                  {o.label}
-                </th>
-              ))}
+              <th className="border px-4 py-2 text-left">Hour ({homeTz.label})</th>
+              {destinations.map(
+                (d, idx) =>
+                  d && (
+                    <th key={idx} className="border px-4 py-2 text-left">
+                      {d.label}
+                    </th>
+                  )
+              )}
             </tr>
           </thead>
           <tbody>
@@ -90,13 +116,16 @@ export default function TimezoneConverter() {
               const base = moment().tz(homeTz.value).startOf('day');
               const time = base.clone().add(h + offset, 'hours');
               return (
-                <tr key={h}>
-                  <td className="border p-2">{time.format('HH:mm')}</td>
-                  {cities.map((o) => (
-                    <td key={o.value} className="border p-2">
-                      {time.clone().tz(o.value).format('HH:mm')}
-                    </td>
-                  ))}
+                <tr key={h} className="hover:bg-blue-100 even:bg-gray-50">
+                  <td className="border px-4 py-2">{time.format('HH:mm')}</td>
+                  {destinations.map(
+                    (d, idx) =>
+                      d && (
+                        <td key={idx} className="border px-4 py-2">
+                          {time.clone().tz(d.value).format('HH:mm')}
+                        </td>
+                      )
+                  )}
                 </tr>
               );
             })}
