@@ -1,174 +1,114 @@
-// filename: TimezoneConverter.jsx
-// Timezone Converter Webapp (React)
-// Install dependencies: npm install moment-timezone
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Timezone Converter</title>
+  <!-- Tailwind CDN (optional, for styling) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React + ReactDOM UMD builds -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel standalone for JSX in-browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Moment + Moment-Timezone -->
+  <script src="https://unpkg.com/moment/min/moment.min.js"></script>
+  <script src="https://unpkg.com/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+</head>
+<body class="p-4">
+  <div id="timezone-root"></div>
 
-import React, { useState } from 'react';
-import moment from 'moment-timezone';
+  <!-- Your component + mount logic -->
+  <script type="text/babel">
+    const { useState } = React;
 
-// List of IANA timezones
-const allTimezones = (() => {
-  try {
-    return moment.tz.names();
-  } catch {
-    return [];
-  }
-})();
+    // Grab all IANA zones from moment-timezone
+    const allTimezones = moment.tz.names();
 
-export default function TimezoneConverter() {
-  const [homeTz, setHomeTz] = useState('America/New_York');
-  const [cities, setCities] = useState([]);
-  const [offset, setOffset] = useState(0);
+    function TimezoneConverter() {
+      const [homeTz, setHomeTz] = useState('America/New_York');
+      const [cities, setCities] = useState([]);
+      const [offset, setOffset] = useState(0);
+      const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  const handleAddCity = (e) => {
-    const tz = e.target.value;
-    if (tz && !cities.includes(tz)) {
-      setCities((prev) => [...prev, tz]);
+      const handleAddCity = e => {
+        const tz = e.target.value;
+        if (tz && !cities.includes(tz)) {
+          setCities(prev => [...prev, tz]);
+        }
+      };
+
+      return (
+        <div className="max-w-xl mx-auto space-y-4">
+          <h1 className="text-2xl font-bold">Timezone Converter</h1>
+          <div>
+            <label className="block mb-1">Home Timezone:</label>
+            <select
+              value={homeTz}
+              onChange={e => setHomeTz(e.target.value)}
+              className="border p-2 w-full"
+            >
+              {allTimezones.map(tz => <option key={tz}>{tz}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-1">Add City Timezone:</label>
+            <select
+              onChange={handleAddCity}
+              className="border p-2 w-full"
+            >
+              <option value="">-- Select a timezone --</option>
+              {allTimezones.map(tz => <option key={tz}>{tz}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-1">
+              Time Offset (hours): <strong>{offset}</strong>
+            </label>
+            <input
+              type="range"
+              min="-12"
+              max="12"
+              value={offset}
+              onChange={e => setOffset(+e.target.value)}
+              className="w-full"
+            />
+          </div>
+
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="border p-1">Hour ({homeTz})</th>
+                {cities.map(tz => (
+                  <th key={tz} className="border p-1">{tz}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {hours.map(h => {
+                const base = moment().tz(homeTz).startOf('day');
+                const time = base.clone().add(h + offset, 'hours');
+                return (
+                  <tr key={h}>
+                    <td className="border p-1">{time.format('HH:mm')}</td>
+                    {cities.map(tz => (
+                      <td key={tz} className="border p-1">
+                        {time.clone().tz(tz).format('HH:mm')}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      );
     }
-  };
 
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-
-  return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Timezone Converter</h1>
-
-      <div className="mb-4">
-        <label htmlFor="home-tz" className="block mb-1 font-medium">
-          Home Timezone:
-        </label>
-        <select
-          id="home-tz"
-          value={homeTz}
-          onChange={(e) => setHomeTz(e.target.value)}
-          className="border rounded p-2 w-full"
-          data-testid="home-timezone-select"
-        >
-          {allTimezones.map((tz) => (
-            <option key={tz} value={tz}>{tz}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label htmlFor="add-city" className="block mb-1 font-medium">
-          Add City Timezone:
-        </label>
-        <select
-          id="add-city"
-          onChange={handleAddCity}
-          className="border rounded p-2 w-full"
-          data-testid="add-city-select"
-        >
-          <option value="">-- Select a timezone --</option>
-          {allTimezones.map((tz) => (
-            <option key={tz} value={tz}>{tz}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-6">
-        <label className="block mb-1 font-medium">
-          Time Offset (hours): <span data-testid="offset-value">{offset}</span>
-        </label>
-        <input
-          type="range"
-          min="-12"
-          max="12"
-          value={offset}
-          onChange={(e) => setOffset(Number(e.target.value))}
-          className="w-full"
-          data-testid="offset-slider"
-        />
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse" data-testid="time-table">
-          <thead>
-            <tr>
-              <th className="border p-2 text-left">Hour ({homeTz})</th>
-              {cities.map((tz) => (
-                <th key={tz} className="border p-2 text-left">{tz}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {hours.map((h) => {
-              const base = moment().tz(homeTz).startOf('day');
-              const time = base.clone().add(h + offset, 'hours');
-
-              return (
-                <tr key={h}>
-                  <td className="border p-2">{time.format('HH:mm')}</td>
-                  {cities.map((tz) => (
-                    <td key={tz} className="border p-2">
-                      {time.clone().tz(tz).format('HH:mm')}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-// ---------- Test Suite ----------
-if (typeof describe === 'function') {
-  const React = require('react');
-  const { render, screen, fireEvent } = require('@testing-library/react');
-  require('@testing-library/jest-dom');
-  const TimezoneConverter = require('./TimezoneConverter').default;
-
-  describe('TimezoneConverter', () => {
-    test('renders home timezone selector with default value', () => {
-      render(<TimezoneConverter />);
-      expect(screen.getByTestId('home-timezone-select')).toHaveValue('America/New_York');
-    });
-
-    test('offset slider updates value display', () => {
-      render(<TimezoneConverter />);
-      const slider = screen.getByTestId('offset-slider');
-      fireEvent.change(slider, { target: { value: '5' } });
-      expect(screen.getByTestId('offset-value')).toHaveTextContent('5');
-    });
-
-    test('adds a city and updates table header', () => {
-      render(<TimezoneConverter />);
-      fireEvent.change(screen.getByTestId('add-city-select'), { target: { value: 'Europe/London' } });
-      expect(screen.getByText('Europe/London')).toBeInTheDocument();
-    });
-
-    test('table has 24 rows for hours', () => {
-      render(<TimezoneConverter />);
-      const rows = screen.getAllByRole('row');
-      expect(rows.length).toBe(25);
-    });
-
-    test('prevents adding duplicate cities', () => {
-      render(<TimezoneConverter />);
-      const addCity = screen.getByTestId('add-city-select');
-      fireEvent.change(addCity, { target: { value: 'Europe/London' } });
-      fireEvent.change(addCity, { target: { value: 'Europe/London' } });
-      const headers = screen.getAllByText('Europe/London');
-      expect(headers.length).toBe(1);
-    });
-
-    test('initially shows only home timezone column', () => {
-      render(<TimezoneConverter />);
-      const cols = screen.getAllByRole('columnheader');
-      expect(cols.length).toBe(1);
-      expect(screen.getByText('Hour (America/New_York)')).toBeInTheDocument();
-    });
-
-    test('adding multiple cities updates column count', () => {
-      render(<TimezoneConverter />);
-      const addCity = screen.getByTestId('add-city-select');
-      fireEvent.change(addCity, { target: { value: 'Europe/London' } });
-      fireEvent.change(addCity, { target: { value: 'Asia/Tokyo' } });
-      const cols = screen.getAllByRole('columnheader');
-      expect(cols.length).toBe(3);
-    });
-  });
-}
+    ReactDOM.createRoot(document.getElementById('timezone-root')).render(
+      <TimezoneConverter />
+    );
+  </script>
+</body>
+</html>
