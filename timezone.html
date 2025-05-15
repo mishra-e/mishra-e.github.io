@@ -13,45 +13,6 @@
   <!-- … your existing tags … -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- ↓ ADD THIS: ↓ -->
-  <style>
-    /* 1) Force Georgia everywhere */
-    html { font-family: Georgia, serif !important; }
-
-    /* 2) White page‐wide (undo bg-gray-100) */
-    .bg-gray-100 { background-color: #ffffff !important; }
-    body       { background-color: #ffffff; }
-
-    /* 3) Main text vs subtext */
-    body, div, span, label, option, td, th, button {
-      color: #4a4a4a !important;
-    }
-    p {
-      color: #999999 !important;
-    }
-
-    /* 4) Links: blue-green → grey on hover */
-    a {
-      color: #008080 !important;
-      text-decoration: none !important;
-    }
-    a:hover {
-      color: #666666 !important;
-      text-decoration: underline !important;
-    }
-
-    /* 5) Headings & any Tailwind .text-blue-700 */
-    h1, h2, h3, .text-blue-700 {
-      color: #008080 !important;
-    }
-
-    /* 6) “Exciting” text (wherever you use .text-red-600 etc) */
-    .text-red-600, .text-red-500 {
-      color: #cc0000 !important;
-    }
-  </style>
-  <!-- ↑ END OVERRIDES ↑ -->
-
 
   <!-- React & ReactDOM (development for JSX) -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
