@@ -1,11 +1,11 @@
-/* General styles */
+/* === Light Mode === */
 body {
     font-family: 'Georgia', serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    color: #4a4a4a; /* Main text color */
-    background-color: #ffffff; /* White background */
+    color: #4a4a4a; /* Main text */
+    background-color: #ffffff; /* All white background */
 }
 
 .container {
@@ -16,28 +16,28 @@ body {
 
 h1, h2, h3 {
     font-weight: 700;
-    color: #008080; /* Blue-green for headings */
+    color: #008080; /* Headings in blue-green */
 }
 
 p {
     font-size: 1.1em;
-    color: #999999; /* Light grey subtext */
+    color: #999999; /* Subtext */
     line-height: 1.8;
 }
 
-/* Link styles */
+/* Links */
 a {
-    font-family: 'Georgia', serif;
-    color: #cc0000; /* Exciting red */
+    color: #008080; /* Blue-green hyperlinks */
     text-decoration: none;
+    font-family: 'Georgia', serif;
 }
 
 a:hover {
-    color: #cc0000;
+    color: #666666; /* Grey on hover */
     text-decoration: underline;
 }
 
-/* Header styles */
+/* Header */
 header {
     background: #ffffff;
     padding: 20px 0;
@@ -79,16 +79,16 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: #cc0000;
+    color: #008080;
     font-weight: 500;
     transition: color 0.3s;
 }
 
 nav ul li a:hover {
-    color: #008080;
+    color: #666666;
 }
 
-/* Section styles */
+/* Sections */
 .section {
     padding: 40px 0;
     background-color: #ffffff;
@@ -112,7 +112,7 @@ nav ul li a:hover {
     color: #999999;
 }
 
-/* Flexbox styles for text and image */
+/* Flex layout */
 .flex-container {
     display: flex;
     flex-wrap: wrap;
@@ -143,7 +143,7 @@ nav ul li a:hover {
     border-radius: 5px;
 }
 
-/* Footer styles - minimalist update */
+/* Footer */
 footer,
 .site-footer {
     background-color: #ffffff;
@@ -189,7 +189,7 @@ footer,
 }
 
 .footer-column a:hover {
-    color: #cc0000;
+    color: #666666;
     text-decoration: none;
 }
 
@@ -224,4 +224,54 @@ footer,
 
 .footer-bottom a:hover {
     text-decoration: underline;
+}
+
+/* === Dark Mode === */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+    h1, h2, h3 {
+        color: #66ffff; /* Lighter blue-green in dark mode */
+    }
+
+    p,
+    .section p,
+    .footer-bottom,
+    .footer-column a,
+    .text-content {
+        color: #cccccc;
+    }
+
+    a,
+    nav ul li a,
+    header h1 a {
+        color: #66ffff;
+    }
+
+    a:hover,
+    nav ul li a:hover,
+    .footer-column a:hover {
+        color: #aaaaaa;
+    }
+
+    header,
+    .section,
+    .text-content,
+    .footer-container,
+    .site-footer,
+    footer {
+        background-color: #1e1e1e;
+        border-color: #333333;
+    }
+
+    .footer-column h4 {
+        color: #66ffff;
+    }
+
+    .footer-bottom a {
+        color: #aaaaaa;
+    }
 }
