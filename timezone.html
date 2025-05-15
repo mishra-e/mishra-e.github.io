@@ -44,13 +44,10 @@
       return { value: tz, label: `${city}, ${region}` };
     });
 
-    function TimezoneConverter() {
+    function TimezoneGraph() {
       const defaultHome = timezoneOptions.find(o => o.value === 'America/New_York');
       const [homeTz, setHomeTz] = useState(defaultHome);
       const [destinations, setDestinations] = useState([null]);
-      const [offset, setOffset] = useState(0);
-      const [highlightWorking, setHighlightWorking] = useState(false);
-      const hours = Array.from({ length: 24 }, (_, i) => i);
 
       const updateDestination = (opt, idx) => {
         const next = [...destinations];
@@ -61,9 +58,12 @@
       const addDestination = () => setDestinations([...destinations, null]);
       const removeDestination = idx => setDestinations(destinations.filter((_, i) => i !== idx));
 
+      const hours = Array.from({ length: 24 }, (_, i) => i);
+      const base = moment().tz(homeTz.value).startOf('day');
+
       return (
-        <div className="p-6 bg-white rounded-lg shadow space-y-6">
-          <h2 className="text-2xl font-bold text-center text-blue-700">Timezone Converter</h2>
+        <div className="bg-white p-6 rounded shadow-md space-y-6">
+          <h2 className="text-2xl font-bold text-center text-blue-700">Timezone Comparison Grid</h2>
 
           <div>
             <label className="block mb-2 font-semibold">Home Timezone:</label>
@@ -96,7 +96,7 @@
                 </div>
                 <button
                   onClick={() => removeDestination(idx)}
-                  className="mt-6 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow"
+                  className="mt-6 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded shadow"
                 >
                   Remove
                 </button>
@@ -104,58 +104,32 @@
             ))}
             <button
               onClick={addDestination}
-              className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow"
+              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded shadow"
             >
               + Add Destination
             </button>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
-              <label className="block mb-2">Offset (hours): <span className="font-semibold text-blue-600">{offset}</span></label>
-              <input
-                type="range"
-                min="-12"
-                max="12"
-                value={offset}
-                onChange={e => setOffset(+e.target.value)}
-                className="w-full h-2 bg-gray-200 rounded-lg"
-              />
-            </div>
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={highlightWorking}
-                onChange={e => setHighlightWorking(e.target.checked)}
-                className="h-5 w-5 text-blue-600"
-              />
-              <span>Highlight 8 AM–7 PM</span>
-            </label>
-          </div>
-
           <div className="overflow-auto">
-            <table className="w-full border-collapse table-auto">
+            <table className="min-w-full table-fixed border">
               <thead className="bg-blue-600 text-white">
                 <tr>
-                  <th className="border px-3 py-2 text-left">Hour ({homeTz.label})</th>
+                  <th className="w-32 p-2 border">Hour</th>
+                  <th className="p-2 border">{homeTz.label}</th>
                   {destinations.map((d, i) => d && (
-                    <th key={i} className="border px-3 py-2 text-left">{d.label}</th>
+                    <th key={i} className="p-2 border">{d.label}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {hours.map(h => {
-                  const isWork = highlightWorking && h >= 8 && h <= 19;
-                  const base = moment().tz(homeTz.value).startOf('day');
-                  const time = base.clone().add(h + offset, 'hours');
+                {hours.map(hour => {
+                  const rowTime = base.clone().add(hour, 'hours');
                   return (
-                    <tr
-                      key={h}
-                      className={`${isWork ? 'bg-yellow-100' : ''} hover:bg-blue-100 even:bg-gray-50`}
-                    >
-                      <td className="border px-3 py-2">{time.format('HH:mm')}</td>
+                    <tr key={hour} className="even:bg-gray-50 hover:bg-blue-50">
+                      <td className="border p-2 font-medium">{`${hour}:00`}</td>
+                      <td className="border p-2">{rowTime.format('HH:mm')}</td>
                       {destinations.map((d, i) => d && (
-                        <td key={i} className="border px-3 py-2">{time.clone().tz(d.value).format('HH:mm')}</td>
+                        <td key={i} className="border p-2">{rowTime.clone().tz(d.value).format('HH:mm')}</td>
                       ))}
                     </tr>
                   );
@@ -167,7 +141,7 @@
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<TimezoneConverter />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<TimezoneGraph />);
   </script>
 </body>
 </html>
