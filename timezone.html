@@ -8,6 +8,13 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Apply Georgia font globally -->
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+    }
+  </style>
+
   <!-- React & ReactDOM (development for JSX) -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
@@ -146,17 +153,4 @@
                     onChange={e => updateDestination(
                       timezoneOptions.find(o => o.value === e.target.value), idx)}>
                     <option value="">Select destination…</option>
-                    {timezoneOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                  </select>
-                </div>
-                {dest && (
-                  <div className="flex items-center space-x-2 text-gray-700">
-                    <span className="whitespace-nowrap">Highlight Hours:</span>
-                    <select className="border rounded p-2 text-gray-700" value={destWorkHours[idx]?.start || 8}
-                      onChange={e => updateDestWorkHours(idx, 'start', e.target.value)}>
-                      {hours.map(h => <option key={h} value={h}>{h}:00</option>)}
-                    </select>
-                    <span>to</span>
-                    <select className="border rounded p-2 text-gray-700" value={destWorkHours[idx]?.end || 19}
-                      onChange={e => updateDestWorkHours(idx, 'end', e.target.value)}>
-                      {hours.map(h => <option key={h} value={h}>{h}:00</option>)}
+                    {timezoneOptions.map(opt => <option key={opt.value} value
