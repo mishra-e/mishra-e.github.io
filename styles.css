@@ -52,12 +52,7 @@ header .container {
     align-items: center;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 2em;
-    font-weight: 700;
-    color: #008080;
-}
+
 
 header h1 a {
     text-decoration: none;
