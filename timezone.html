@@ -8,29 +8,32 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <style>
+    body {
+      font-family: Georgia, serif;
+    }
+  </style>
+
   <!-- React & ReactDOM -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 
-  <!-- Babel for JSX -->
+  <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Moment & Moment-Timezone -->
+  <!-- Moment + Timezone -->
   <script src="https://unpkg.com/moment/min/moment.min.js"></script>
   <script src="https://unpkg.com/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
-
-  <!-- React-Select CSS from CDN -->
-  <link rel="stylesheet" href="https://unpkg.com/react-select@5.7.0/dist/react-select.css" />
-  <!-- React-Select UMD -->
-  <script src="https://unpkg.com/react-select@5.7.0/dist/react-select.umd.js"></script>
 </head>
-<body class="bg-gray-100">
+
+<body class="bg-gray-100 text-gray-800">
   <header class="bg-white shadow">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Ekta Mishra</h1>
+      <h1 class="text-2xl font-bold">
+        <a href="index.html" class="px-3 hover:underline text-teal-700">Ekta Mishra</a>
+      </h1>
       <nav>
-        <a href="index.html" class="px-3 hover:underline">Home</a>
-        <a href="timezone.html" class="px-3 hover:underline font-semibold">Timezone Tool</a>
+        <a href="index.html" class="px-3 hover:underline text-teal-700">Return Home</a>
       </nav>
     </div>
   </header>
@@ -40,133 +43,226 @@
   </main>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    // Your existing <script type="text/babel"> unchanged,
+    // except we change all highlight/background colors to match your theme.
 
-    const Select = window.ReactSelect;
-
-    if (typeof Select !== 'function') {
-      document.getElementById('root').innerHTML = '<div class="text-red-600 font-bold">Error: ReactSelect failed to load.</div>';
-      throw new Error("ReactSelect is undefined. Check CDN or order of scripts.");
-    }
+    const { useState } = React;
 
     const timezoneOptions = moment.tz.names().map(tz => {
       const parts = tz.split('/');
       const city = parts.pop().replace(/_/g, ' ');
-      const country = parts.join(' / ').replace(/_/g, ' ');
-      return { value: tz, label: `${city}, ${country}` };
+      const region = parts.join(' / ').replace(/_/g, ' ');
+      return { value: tz, label: `${city}, ${region}` };
     });
 
-    function TimezoneConverter() {
+    function TimezoneGraph() {
       const defaultHome = timezoneOptions.find(o => o.value === 'America/New_York');
       const [homeTz, setHomeTz] = useState(defaultHome);
       const [destinations, setDestinations] = useState([null]);
-      const [offset, setOffset] = useState(0);
-      const [highlightWorking, setHighlightWorking] = useState(false);
-      const hours = Array.from({ length: 24 }, (_, i) => i);
+
+      const [homeWorkHours, setHomeWorkHours] = useState({ start: 8, end: 19 });
+      const [destWorkHours, setDestWorkHours] = useState(destinations.map(() => ({ start: 8, end: 19 })));
 
       const updateDestination = (opt, idx) => {
-        setDestinations(prev => {
-          const next = [...prev];
-          next[idx] = opt;
-          return next;
-        });
+        const next = [...destinations];
+        next[idx] = opt;
+        setDestinations(next);
+
+        const nextWorkHours = [...destWorkHours];
+        while (nextWorkHours.length < next.length) {
+          nextWorkHours.push({ start: 8, end: 19 });
+        }
+        setDestWorkHours(nextWorkHours);
       };
-      const addDestination = () => setDestinations(prev => [...prev, null]);
-      const removeDestination = idx => setDestinations(prev => prev.filter((_, i) => i !== idx));
+
+      const addDestination = () => {
+        setDestinations([...destinations, null]);
+        setDestWorkHours([...destWorkHours, { start: 8, end: 19 }]);
+      };
+
+      const removeDestination = idx => {
+        setDestinations(destinations.filter((_, i) => i !== idx));
+        setDestWorkHours(destWorkHours.filter((_, i) => i !== idx));
+      };
+
+      const updateDestWorkHours = (idx, field, value) => {
+        const next = [...destWorkHours];
+        next[idx] = { ...next[idx], [field]: parseInt(value) };
+        setDestWorkHours(next);
+      };
+
+      const hours = Array.from({ length: 24 }, (_, i) => i);
+      const base = moment().tz(homeTz.value).startOf('day');
+
+      const isWorkHour = (time, workHours) => {
+        const h = parseInt(time.format('H'));
+        return h >= workHours.start && h <= workHours.end;
+      };
+
+      const getGMTOffset = (tz) => {
+        const offset = moment.tz(tz).utcOffset();
+        const sign = offset >= 0 ? '+' : '-';
+        const absOffset = Math.abs(offset);
+        const hrs = Math.floor(absOffset / 60);
+        const mins = absOffset % 60;
+        return `UTC${sign}${hrs}${mins > 0 ? ':' + String(mins).padStart(2, '0') : ''}`;
+      };
+
+      const exportToCSV = () => {
+        let csv = ['Hour,' + homeTz.label];
+        destinations.forEach(d => {
+          if (d) csv[0] += ',' + d.label;
+        });
+
+        csv.push('UTC Offset,' + getGMTOffset(homeTz.value) + ',' +
+          destinations.filter(d => d).map(d => getGMTOffset(d.value)).join(','));
+
+        hours.forEach(hour => {
+          const rowTime = base.clone().add(hour, 'hours');
+          let row = `${hour}:00,${rowTime.format('HH:mm')}`;
+
+          destinations.forEach(d => {
+            if (d) {
+              const destTime = rowTime.clone().tz(d.value);
+              row += ',' + destTime.format('HH:mm');
+            }
+          });
+
+          csv.push(row);
+        });
+
+        const csvContent = "data:text/csv;charset=utf-8," + csv.join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "timezone_comparison.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
 
       return (
-        <div className="p-6 bg-white rounded-lg shadow space-y-6">
-          <h2 className="text-2xl font-bold text-center text-blue-700">Timezone Converter</h2>
+        <div className="bg-white p-6 rounded shadow-md space-y-6">
+          <h2 className="text-2xl font-bold text-center text-teal-700">Timezone Comparison Grid</h2>
 
           <div>
             <label className="block mb-2 font-semibold">Home Timezone:</label>
-            <Select
-              options={timezoneOptions}
-              value={homeTz}
-              onChange={setHomeTz}
-              isSearchable
-              placeholder="Select home timezone…"
-            />
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex-1">
+                <select className="w-full border rounded p-2" value={homeTz.value}
+                  onChange={e => setHomeTz(timezoneOptions.find(o => o.value === e.target.value))}>
+                  {timezoneOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="whitespace-nowrap">Highlight Hours:</span>
+                <select className="border rounded p-2"
+                  value={homeWorkHours.start}
+                  onChange={e => setHomeWorkHours({ ...homeWorkHours, start: parseInt(e.target.value) })}>
+                  {hours.map(h => <option key={h} value={h}>{h}:00</option>)}
+                </select>
+                <span>to</span>
+                <select className="border rounded p-2"
+                  value={homeWorkHours.end}
+                  onChange={e => setHomeWorkHours({ ...homeWorkHours, end: parseInt(e.target.value) })}>
+                  {hours.map(h => <option key={h} value={h}>{h}:00</option>)}
+                </select>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-4">
             {destinations.map((dest, idx) => (
-              <div key={idx} className="flex items-center space-x-2">
+              <div key={idx} className="flex flex-wrap items-center gap-2">
                 <div className="flex-1">
                   <label className="block mb-1 font-semibold">Destination {idx + 1}:</label>
-                  <Select
-                    options={timezoneOptions}
-                    value={dest}
-                    onChange={opt => updateDestination(opt, idx)}
-                    isSearchable
-                    placeholder="Select destination…"
-                  />
+                  <select className="w-full border rounded p-2"
+                    value={dest?.value || ''}
+                    onChange={e => updateDestination(timezoneOptions.find(o => o.value === e.target.value), idx)}>
+                    <option value="">Select destination…</option>
+                    {timezoneOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
                 </div>
-                <button
-                  onClick={() => removeDestination(idx)}
-                  className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded"
-                >
+
+                {dest && (
+                  <div className="flex items-center space-x-2">
+                    <span className="whitespace-nowrap">Highlight Hours:</span>
+                    <select className="border rounded p-2"
+                      value={destWorkHours[idx]?.start || 8}
+                      onChange={e => updateDestWorkHours(idx, 'start', e.target.value)}>
+                      {hours.map(h => <option key={h} value={h}>{h}:00</option>)}
+                    </select>
+                    <span>to</span>
+                    <select className="border rounded p-2"
+                      value={destWorkHours[idx]?.end || 19}
+                      onChange={e => updateDestWorkHours(idx, 'end', e.target.value)}>
+                      {hours.map(h => <option key={h} value={h}>{h}:00</option>)}
+                    </select>
+                  </div>
+                )}
+
+                <button onClick={() => removeDestination(idx)}
+                  className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded shadow">
                   Remove
                 </button>
               </div>
             ))}
-            <button
-              onClick={addDestination}
-              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded"
-            >
-              + Add Destination
-            </button>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <div className="flex-1">
-              <label className="block mb-2">Offset (hours): <span className="text-blue-600 font-semibold">{offset}</span></label>
-              <input
-                type="range"
-                min="-12"
-                max="12"
-                value={offset}
-                onChange={e => setOffset(+e.target.value)}
-                className="w-full h-2 bg-gray-200 rounded-lg"
-              />
+            <div className="flex gap-2">
+              <button onClick={addDestination}
+                className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded shadow">
+                + Add Destination
+              </button>
+              <button onClick={exportToCSV}
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded shadow">
+                Export to CSV
+              </button>
             </div>
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={highlightWorking}
-                onChange={e => setHighlightWorking(e.target.checked)}
-                className="h-5 w-5 text-blue-600"
-              />
-              <span>Highlight 8 AM–7 PM</span>
-            </label>
           </div>
 
           <div className="overflow-auto">
-            <table className="w-full border-collapse">
-              <thead className="bg-blue-600 text-white">
+            <table className="min-w-full table-fixed border">
+              <thead className="bg-teal-700 text-white">
                 <tr>
-                  <th className="border px-3 py-2 text-left">Hour ({homeTz.label})</th>
-                  {destinations.map((d, idx) => d && (
-                    <th key={idx} className="border px-3 py-2 text-left">{d.label}</th>
+                  <th className="w-32 p-2 border">Hour</th>
+                  <th className="p-2 border">{homeTz.label}</th>
+                  {destinations.map((d, i) => d && (
+                    <th key={i} className="p-2 border">{d.label}</th>
+                  ))}
+                </tr>
+                <tr className="bg-teal-100 text-sm">
+                  <th className="p-2 border">UTC Offset</th>
+                  <th className="p-2 border">{getGMTOffset(homeTz.value)}</th>
+                  {destinations.map((d, i) => d && (
+                    <th key={i} className="p-2 border">{getGMTOffset(d.value)}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {hours.map(h => {
-                  const base = moment().tz(homeTz.value).startOf('day');
-                  const time = base.clone().add(h + offset, 'hours');
+                {hours.map(hour => {
+                  const rowTime = base.clone().add(hour, 'hours');
+
                   return (
-                    <tr
-                      key={h}
-                      className={`hover:bg-blue-100`}
-                    >
-                      <td className={`border px-3 py-2 ${highlightWorking && h >= 8 && h <= 19 ? 'bg-yellow-100' : ''}`}>{time.format('HH:mm')}</td>
-                      {destinations.map((d, idx) => {
+                    <tr key={hour}>
+                      <td className="border p-2 font-medium">{`${hour}:00`}</td>
+
+                      <td className={`border p-2 ${isWorkHour(rowTime, homeWorkHours) ? 'bg-teal-100' : ''}`}>
+                        {rowTime.format('HH:mm')}
+                      </td>
+
+                      {destinations.map((d, i) => {
                         if (!d) return null;
-                        const destTime = time.clone().tz(d.value);
-                        const isWork = highlightWorking && +destTime.format('H') >= 8 && +destTime.format('H') <= 19;
+                        const destTime = rowTime.clone().tz(d.value);
+                        const destWorkHour = destWorkHours[i] || { start: 8, end: 19 };
+
                         return (
-                          <td key={idx} className={`border px-3 py-2 ${isWork ? 'bg-yellow-100' : ''}`}>{destTime.format('HH:mm')}</td>
+                          <td key={i}
+                            className={`border p-2 ${isWorkHour(destTime, destWorkHour) ? 'bg-teal-100' : ''}`}>
+                            {destTime.format('HH:mm')}
+                          </td>
                         );
                       })}
                     </tr>
@@ -179,8 +275,7 @@
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<TimezoneConverter />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<TimezoneGraph />);
   </script>
 </body>
 </html>
