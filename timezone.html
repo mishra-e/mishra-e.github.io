@@ -20,9 +20,9 @@
   <script src="https://unpkg.com/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
 
   <!-- React-Select CSS from CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/react-select@5.7.3/dist/react-select.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/react-select@5.7.0/dist/react-select.css" />
   <!-- React-Select UMD -->
-  <script src="https://cdn.jsdelivr.net/npm/react-select@5.7.3/dist/react-select.umd.min.js"></script>
+  <script src="https://unpkg.com/react-select@5.7.0/dist/react-select.umd.js"></script>
 </head>
 <body class="bg-gray-100">
   <header class="bg-white shadow">
@@ -40,8 +40,14 @@
   </main>
 
   <script type="text/babel">
-    const { useState } = React;
-    const Select = window.ReactSelect.default;
+    const { useState, useEffect } = React;
+
+    const Select = window.ReactSelect;
+
+    if (typeof Select !== 'function') {
+      document.getElementById('root').innerHTML = '<div class="text-red-600 font-bold">Error: ReactSelect failed to load.</div>';
+      throw new Error("ReactSelect is undefined. Check CDN or order of scripts.");
+    }
 
     const timezoneOptions = moment.tz.names().map(tz => {
       const parts = tz.split('/');
@@ -147,18 +153,22 @@
               </thead>
               <tbody>
                 {hours.map(h => {
-                  const isWork = highlightWorking && h >= 8 && h <= 19;
                   const base = moment().tz(homeTz.value).startOf('day');
                   const time = base.clone().add(h + offset, 'hours');
                   return (
                     <tr
                       key={h}
-                      className={`${isWork ? 'bg-yellow-100' : ''} hover:bg-blue-100 even:bg-gray-50`}
+                      className={`hover:bg-blue-100`}
                     >
-                      <td className="border px-3 py-2">{time.format('HH:mm')}</td>
-                      {destinations.map((d, idx) => d && (
-                        <td key={idx} className="border px-3 py-2">{time.clone().tz(d.value).format('HH:mm')}</td>
-                      ))}
+                      <td className={`border px-3 py-2 ${highlightWorking && h >= 8 && h <= 19 ? 'bg-yellow-100' : ''}`}>{time.format('HH:mm')}</td>
+                      {destinations.map((d, idx) => {
+                        if (!d) return null;
+                        const destTime = time.clone().tz(d.value);
+                        const isWork = highlightWorking && +destTime.format('H') >= 8 && +destTime.format('H') <= 19;
+                        return (
+                          <td key={idx} className={`border px-3 py-2 ${isWork ? 'bg-yellow-100' : ''}`}>{destTime.format('HH:mm')}</td>
+                        );
+                      })}
                     </tr>
                   );
                 })}
