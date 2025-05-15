@@ -66,6 +66,15 @@
         return h >= 8 && h <= 19;
       };
 
+      const getGMTOffset = (tz) => {
+        const offset = moment.tz(tz).utcOffset();
+        const sign = offset >= 0 ? '+' : '-';
+        const absOffset = Math.abs(offset);
+        const hrs = Math.floor(absOffset / 60);
+        const mins = absOffset % 60;
+        return `GMT${sign}${hrs}${mins > 0 ? ':' + String(mins).padStart(2, '0') : ''}`;
+      };
+
       return (
         <div className="bg-white p-6 rounded shadow-md space-y-6">
           <h2 className="text-2xl font-bold text-center text-blue-700">Timezone Comparison Grid</h2>
@@ -123,6 +132,13 @@
                   <th className="p-2 border">{homeTz.label}</th>
                   {destinations.map((d, i) => d && (
                     <th key={i} className="p-2 border">{d.label}</th>
+                  ))}
+                </tr>
+                <tr className="bg-blue-100 text-sm">
+                  <th className="p-2 border">GMT Offset</th>
+                  <th className="p-2 border">{getGMTOffset(homeTz.value)}</th>
+                  {destinations.map((d, i) => d && (
+                    <th key={i} className="p-2 border">{getGMTOffset(d.value)}</th>
                   ))}
                 </tr>
               </thead>
