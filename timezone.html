@@ -61,6 +61,11 @@
       const hours = Array.from({ length: 24 }, (_, i) => i);
       const base = moment().tz(homeTz.value).startOf('day');
 
+      const isWorkHour = (time) => {
+        const h = parseInt(time.format('H'));
+        return h >= 8 && h <= 19;
+      };
+
       return (
         <div className="bg-white p-6 rounded shadow-md space-y-6">
           <h2 className="text-2xl font-bold text-center text-blue-700">Timezone Comparison Grid</h2>
@@ -124,13 +129,19 @@
               <tbody>
                 {hours.map(hour => {
                   const rowTime = base.clone().add(hour, 'hours');
+                  const isHomeWorkHour = isWorkHour(rowTime);
                   return (
-                    <tr key={hour} className="even:bg-gray-50 hover:bg-blue-50">
-                      <td className="border p-2 font-medium">{`${hour}:00`}</td>
-                      <td className="border p-2">{rowTime.format('HH:mm')}</td>
-                      {destinations.map((d, i) => d && (
-                        <td key={i} className="border p-2">{rowTime.clone().tz(d.value).format('HH:mm')}</td>
-                      ))}
+                    <tr key={hour}>
+                      <td className={`border p-2 font-medium ${isHomeWorkHour ? 'bg-yellow-100' : ''}`}>{`${hour}:00`}</td>
+                      <td className={`border p-2 ${isHomeWorkHour ? 'bg-yellow-100' : ''}`}>{rowTime.format('HH:mm')}</td>
+                      {destinations.map((d, i) => {
+                        if (!d) return null;
+                        const destTime = rowTime.clone().tz(d.value);
+                        const isDestWorkHour = isWorkHour(destTime);
+                        return (
+                          <td key={i} className={`border p-2 ${isDestWorkHour ? 'bg-yellow-100' : ''}`}>{destTime.format('HH:mm')}</td>
+                        );
+                      })}
                     </tr>
                   );
                 })}
