@@ -8,59 +8,158 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- React + ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 
-  <!-- Babel -->
+  <!-- React Select directly from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-select/5.7.4/react-select.min.js" crossorigin></script>
+  
+  <!-- Babel for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- React-Select CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/react-select@5.7.0/dist/react-select.css" />
+  <style>
+    /* Basic styling for React Select */
+    .select-container {
+      position: relative;
+      box-sizing: border-box;
+    }
+    .select__control {
+      background-color: white;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      min-height: 38px;
+      cursor: pointer;
+      padding: 2px 8px;
+    }
+    .select__control:hover {
+      border-color: #9ca3af;
+    }
+    .select__menu {
+      background-color: white;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      margin-top: 4px;
+      position: absolute;
+      width: 100%;
+      z-index: 10;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .select__option {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .select__option:hover {
+      background-color: #f3f4f6;
+    }
+    .select__option--is-selected {
+      background-color: #e5e7eb;
+    }
+    .select__placeholder {
+      color: #9ca3af;
+    }
+  </style>
 </head>
 <body class="p-6">
   <h1 class="text-xl font-bold text-blue-600 mb-4">React Select Working Test</h1>
-  <div id="root">Loading...</div>
+  <div id="root" class="max-w-md mx-auto">Loading...</div>
 
-  <!-- React-Select Script with onload hook -->
-  <script src="https://unpkg.com/react-select@5.7.0/dist/react-select.umd.js" onload="startApp()"></script>
-
-  <!-- JSX Script -->
   <script type="text/babel">
-    function startApp() {
-      const { useState } = React;
-      const Select = window.Select || window.ReactSelect || window["ReactSelect"];
-
-      if (typeof Select !== 'function') {
-        document.getElementById('root').innerHTML =
-          '<p class="text-red-600 font-bold">Error: React Select is not loaded.</p>';
+    // We need to wait for all resources to load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Try to access ReactSelect from different possible global variables
+      const ReactSelectLib = window.ReactSelect || window.Select;
+      
+      if (!ReactSelectLib) {
+        console.error("React Select library not loaded properly!");
+        document.getElementById('root').innerHTML = 
+          '<div class="p-4 bg-red-100 text-red-700 rounded">Error: React Select library could not be loaded. Please check console for details.</div>';
         return;
       }
-
+      
+      const { useState } = React;
+      
       const options = [
         { value: 'America/New_York', label: 'New York' },
+        { value: 'America/Chicago', label: 'Chicago' },
+        { value: 'America/Denver', label: 'Denver' },
+        { value: 'America/Los_Angeles', label: 'Los Angeles' },
+        { value: 'Europe/London', label: 'London' },
+        { value: 'Europe/Paris', label: 'Paris' },
+        { value: 'Europe/Berlin', label: 'Berlin' },
         { value: 'Asia/Tokyo', label: 'Tokyo' },
-        { value: 'Europe/London', label: 'London' }
+        { value: 'Asia/Shanghai', label: 'Shanghai' },
+        { value: 'Australia/Sydney', label: 'Sydney' },
+        { value: 'Pacific/Auckland', label: 'Auckland' }
       ];
-
-      function App() {
-        const [selected, setSelected] = useState(null);
+      
+      function TimezoneSelector() {
+        const [selectedTz, setSelectedTz] = useState(null);
+        const [currentTime, setCurrentTime] = useState('');
+        
+        // Update time when timezone changes
+        React.useEffect(() => {
+          if (selectedTz) {
+            updateTime(selectedTz.value);
+            // Update time every second
+            const interval = setInterval(() => updateTime(selectedTz.value), 1000);
+            return () => clearInterval(interval);
+          }
+        }, [selectedTz]);
+        
+        function updateTime(timezone) {
+          try {
+            const options = {
+              timeZone: timezone,
+              hour12: true,
+              hour: 'numeric',
+              minute: 'numeric',
+              second: 'numeric',
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            };
+            const formatter = new Intl.DateTimeFormat('en-US', options);
+            setCurrentTime(formatter.format(new Date()));
+          } catch (error) {
+            console.error("Error formatting date:", error);
+            setCurrentTime("Error displaying time");
+          }
+        }
+        
         return (
-          <div className="max-w-md space-y-4">
-            <Select
-              options={options}
-              value={selected}
-              onChange={setSelected}
-              placeholder="Select a timezone"
-            />
-            <div className="text-gray-700">
-              Selected: {selected?.label || 'None'}
+          <div className="space-y-4">
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Select a Timezone:
+              </label>
+              <ReactSelectLib
+                options={options}
+                value={selectedTz}
+                onChange={setSelectedTz}
+                placeholder="Choose a timezone..."
+                className="select-container"
+                classNamePrefix="select"
+              />
+            </div>
+            
+            {selectedTz && (
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h2 className="font-semibold text-blue-700 mb-2">Current Time in {selectedTz.label}:</h2>
+                <div className="text-lg">{currentTime}</div>
+              </div>
+            )}
+            
+            <div className="mt-4 text-sm text-gray-500">
+              Timezone value: {selectedTz?.value || 'None selected'}
             </div>
           </div>
         );
       }
-
-      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-    }
+      
+      // Render the app
+      ReactDOM.createRoot(document.getElementById('root')).render(<TimezoneSelector />);
+    });
   </script>
 </body>
 </html>
