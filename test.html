@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ReactSelect Minimal</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-select@5.7.3/dist/react-select.umd.min.js"></script>
+  <script>
+    window.ReactSelect = window.Select; // 🪄 fix
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/react-select@5.7.3/dist/react-select.min.css" />
+</head>
+<body class="p-4">
+  <h1 class="text-xl font-bold">Timezone Select Test</h1>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+    const Select = window.ReactSelect;
+
+    const options = [
+      { value: 'America/New_York', label: 'New York' },
+      { value: 'Asia/Tokyo', label: 'Tokyo' }
+    ];
+
+    function App() {
+      const [selected, setSelected] = useState(null);
+      return (
+        <div className="mt-4">
+          <Select options={options} value={selected} onChange={setSelected} />
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
