@@ -16,7 +16,7 @@ body {
 
 h1, h2, h3 {
     font-weight: 700;
-    color: #666666; /* Headings in blue-green */
+    color: #666666; /* Headings in grey */
 }
 
 p {
@@ -226,52 +226,5 @@ footer,
     text-decoration: underline;
 }
 
-/* === Dark Mode === */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: #121212;
-        color: #e0e0e0;
-    }
 
-    h1, h2, h3 {
-        color: #66ffff; /* Lighter blue-green in dark mode */
-    }
 
-    p,
-    .section p,
-    .footer-bottom,
-    .footer-column a,
-    .text-content {
-        color: #cccccc;
-    }
-
-    a,
-    nav ul li a,
-    header h1 a {
-        color: #66ffff;
-    }
-
-    a:hover,
-    nav ul li a:hover,
-    .footer-column a:hover {
-        color: #aaaaaa;
-    }
-
-    header,
-    .section,
-    .text-content,
-    .footer-container,
-    .site-footer,
-    footer {
-        background-color: #1e1e1e;
-        border-color: #333333;
-    }
-
-    .footer-column h4 {
-        color: #66ffff;
-    }
-
-    .footer-bottom a {
-        color: #aaaaaa;
-    }
-}
